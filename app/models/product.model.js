@@ -8,9 +8,8 @@ module.exports = (sequelize, Sequelize) => {
             },
 
             productId: {
-                type: Sequelize.UUID,
-                defaultValue: Sequelize.UUIDV4,
-                primaryKey: true
+                type: Sequelize.INTEGER,
+                unique: true
             },
 
             productname: {
@@ -35,8 +34,11 @@ module.exports = (sequelize, Sequelize) => {
 
             status: {
                 type: Sequelize.BOOLEAN,
-            }
+            },
 
+            cat_id: {
+                type: Sequelize.INTEGER,
+            },
         })
     return product;
 }

@@ -1,3 +1,4 @@
+
 const Sequelize = require('sequelize');
 const env = require('./env')
 
@@ -29,6 +30,10 @@ module.exports = db;
 db.product = require("../models/product.model")(sequelize, Sequelize);
 db.category = require("../models/category.model")(sequelize, Sequelize);
 
+db.product.belongsTo(db.category, {
+  foreignKey: 'cat_id', onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
-db.product.belongsTo(db.category, { foreignKey: 'categoryId' });
+
 

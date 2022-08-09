@@ -9,7 +9,7 @@ module.exports = (sequelize, Sequelize) => {
 
             categoryId: {
                 type: Sequelize.INTEGER,
-                primaryKey: true
+                unique: true
             },
 
             categoryname: {

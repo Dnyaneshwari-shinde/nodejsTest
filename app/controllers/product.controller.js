@@ -2,7 +2,8 @@ const db = require("../config/db.config");
 const product = db.product;
 const category = db.category;
 
-const sequelize = require('sequelize');
+
+const generateUniqueId = require('generate-unique-id');
 
 
 exports.addProduct = async (req, res) => {
@@ -23,14 +24,20 @@ exports.addProduct = async (req, res) => {
   }
   else {
     var cat = await category.findOne({ where: { categoryname: req.body.categoryname } });
+    console.log(cat.categoryId);
     try {
+      const id = generateUniqueId({
+        length: 5,
+        useLetters: false
+      });
       product.create({
+        productId: id,
         productname: req.body.productname,
         description: req.body.description,
         price: req.body.price,
         weight: req.body.weight,
         status: true,
-        categoryId: cat.categoryId
+        cat_id: cat.categoryId
       }).then(pro => {
         res.json({
           status: 200,

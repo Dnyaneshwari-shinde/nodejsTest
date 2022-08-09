@@ -14,4 +14,7 @@ module.exports = function (app) {
   app.delete("/api/removeCategory", category.removeCategory);
   app.put("/api/updateCategory", category.updateCategory);
   app.get("/api/getCat", category.getCat);
+
+
+
 };
