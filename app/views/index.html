@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: "Lato", sans-serif;
+    }
+
+    .sidenav {
+      height: 100%;
+      width: 190px;
+      position: fixed;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      background-color: rgb(12, 4, 102);
+      overflow-x: hidden;
+      padding-top: 50px;
+    }
+
+    .sidenav a {
+      padding: 6px 8px 6px 16px;
+      text-decoration: none;
+      font-size: 20px;
+      color: #faf6f6;
+      display: block;
+    }
+
+    .sidenav a:hover {
+      color: rgb(18, 17, 17);
+    }
+
+    .main {
+      margin-left: 260px;
+      /* Same as the width of the sidenav */
+      font-size: 15px;
+      /* Increased text to enable scrolling */
+      padding: 0px 50px;
+    }
+
+    @media screen and (max-height: 450px) {
+      .sidenav {
+        padding-top: 15px;
+      }
+
+      .sidenav a {
+        font-size: 18px;
+      }
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js "></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js "></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <script>
+
+    $(function () {
+      $("#btn").click(function () {
+        var proname = $("#proname").val();
+        var desc = $("#desc").val();
+        var price = $("#price").val();
+        var weight = $("#weight").val();
+        var catname = $("#select").val();
+        console.log(proname, desc, price, weight, catname);
+
+        $.ajax({
+          url: "/api/addProduct",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({
+            productname: proname,
+            description: desc,
+            price: price,
+            weight: weight,
+            categoryname: catname
+          }),
+          success: function (data) {
+            if (data.message) {
+              alert(data.message);
+            }
+          },
+        });
+      })
+    })
+
+    $(document).ready(function () {
+      var btn = "Update";
+      var btn1 = "Delete";
+      $.ajax({
+        url: `/api/getProducts`,
+        method: 'GET',
+        contentType: 'application/json',
+        success: function (data) {
+          var product = data.product;
+          console.log(product);
+          var len = product.length;
+          console.log(len);
+          if (len == 0) {
+            var row = $('<tr><td colspan="6">' + "No record found" + '</td></tr>');
+            $("#productRecord").append(row);
+          }
+          else {
+            product.map(pro => {
+              var row = $('<tr><td>' + pro.productId + '</td><td>' +
+                pro.productname + '</td><td>' +
+                pro.description + '</td><td>' +
+                pro.price + '</td><td>' + pro.weight + '</td><td>' + pro.status + '</td><td><button onclick="getdata(this)">' + btn + '</button></td><td><button onclick="deleteProduct(this)">' + btn1 + '</button></td></tr>');
+              $("#productRecord").append(row);
+            })
+          }
+        }
+      });
+
+      $.ajax({
+        url: `/api/getCat`,
+        method: 'GET',
+        contentType: 'application/json',
+        success: function (data) {
+          var cat = data.category;
+          cat.map(catname => {
+            console.log(catname.categoryname)
+            var option = $("<option></option>").text(catname.categoryname);
+            $("#select").append(option);
+          })
+        }
+      })
+    })
+
+
+    function getdata(td) {
+      var row = td.parentElement.parentElement;
+      console.log("row", row);
+      var rows = document.getElementsByTagName("td");
+      console.log(rows[0].innerText);
+      console.log(rows[1].innerText);
+      console.log(rows[2].innerText);
+      console.log(rows[3].innerText);
+      document.getElementById('id').value = rows[0].innerText;
+      document.getElementById('proName').value = rows[1].innerText;
+      document.getElementById('detail').value = rows[2].innerText;
+      document.getElementById('rate').value = rows[3].innerText;
+      document.getElementById('wei').value = rows[4].innerText;
+      $('#myModal').modal('show');
+    }
+
+    function deleteProduct(td) {
+      var row = td.parentElement.parentElement;
+      console.log("row", row);
+      var rows = document.getElementsByTagName("td");
+      console.log(rows[0].innerText);
+      document.getElementById('id').value = rows[0].innerText;
+      $.ajax({
+        url: `/api/removeProduct`,
+        method: 'DELETE',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          product_id: document.getElementById('id').value
+        }),
+        success: function (data) {
+          if (data.message) {
+            alert(data.message);
+            location.reload();
+          }
+        }
+      })
+    }
+    function updateInfo() {
+      var id = $("#id").val();
+      var proName = $("#proName").val();
+      var detail = $("#detail").val();
+      var rate = $("#rate").val();
+      var wei = $("#wei").val();
+      $.ajax({
+        url: `/api/updateProduct`,
+        method: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          product_id: id,
+          productname: proName,
+          description: detail,
+          price: rate,
+          weight: wei
+        }),
+        success: function (data) {
+          if (data.message) {
+            alert(data.message);
+            location.reload();
+          }
+        }
+      })
+    }
+  </script>
+  <style>
+    input {
+      width: 30%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    #btn {
+      /* // background-color: rgb(0, 25, 250); */
+      border: none;
+      border-radius: 5px;
+      /* color: black; */
+      /* padding: 16px 32px; */
+      text-align: center;
+      font-size: 16px;
+      /* margin: 4px 2px; */
+      /* transition: 0.3s; */
+      width: 100px;
+      height: 60px;
+    }
+
+
+    form {
+      margin-top: 50px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sidenav">
+    <a href="index.html">Add Product</a>
+    <a href="category.html">Add Categories</a>
+    <a href="product.html">List Product</a>
+  </div>
+  <div class="main">
+    <form>
+      <div class="col-md-12">
+        <label>Product name</label>
+        <input type="text" class="form-control" id="proname" />
+      </div>
+      <div class="col-md-6">
+        <label>Description</label>
+        <input type="text" class="form-control" id="desc" />
+      </div>
+      <div class="col-md-6">
+        <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" id="select">
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label>Price</label>
+        <input type="number" class="form-control" id="price" />
+      </div>
+      <div class="col-md-6">
+        <label>Weight</label>
+        <input type="number" class="form-control" id="weight" />
+      </div>
+      <div class="col-md-12 text-center">
+        <button type="button" class="btn btn-primary" id="btn">Add</button>
+      </div>
+    </form>
+
+
+
+    <div class="app-content content">
+      <div class="content-wrapper">
+        <div class="scrollmenu">
+          <table id="productRecord" class="table">
+            <thead>
+              <tr>
+                <th>Product Id</th>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Weight</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                  aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="exampleModalLabel">Product Update</h4>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Product Id</label>
+                    <input type="text" class="form-control" id="id" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Product Name</label>
+                    <input type="text" class="form-control" id="proName">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">Description</label>
+                    <input type="text" class="form-control" id="detail">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Price</label>
+                    <input type="number" class="form-control" id="rate">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Weight</label>
+                    <input type="number" class="form-control" id="wei">
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal" onclick="updateInfo()">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>
