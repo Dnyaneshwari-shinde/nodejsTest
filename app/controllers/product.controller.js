@@ -47,13 +47,14 @@ exports.addProduct = async (req, res) => {
       })
     }
     catch (e) {
+      res.send(e);
       console.log(e);
     }
   }
 };
 
 exports.getProducts = async (req, res) => {
-  product.findAll({}).then(data => {
+  product.findAll({ include: [{ model: category, as: 'category' }] }).then(data => {
     res.json({
       status: 200,
       message: "Products list",
