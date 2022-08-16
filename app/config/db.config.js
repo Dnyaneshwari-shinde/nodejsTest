@@ -31,7 +31,7 @@ db.product = require("../models/product.model")(sequelize, Sequelize);
 db.category = require("../models/category.model")(sequelize, Sequelize);
 
 db.product.belongsTo(db.category, {
-  foreignKey: 'cat_id', onDelete: "CASCADE",
+  foreignKey: 'categoryId', onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
 

@@ -37,7 +37,7 @@ exports.addProduct = async (req, res) => {
         price: req.body.price,
         weight: req.body.weight,
         status: true,
-        cat_id: cat.categoryId
+        categoryId: cat.categoryId
       }).then(pro => {
         res.json({
           status: 200,

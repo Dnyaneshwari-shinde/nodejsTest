@@ -36,7 +36,7 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.BOOLEAN,
             },
 
-            cat_id: {
+            categoryId: {
                 type: Sequelize.INTEGER,
             },
         })
